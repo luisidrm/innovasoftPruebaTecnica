@@ -21,7 +21,8 @@ export const loginUser = createAsyncThunk<
 const initialState: AuthState = {
   user: null,
   loading: false,
-  error: null
+  error: null,
+  token: null
 };
 
 const authSlice = createSlice({

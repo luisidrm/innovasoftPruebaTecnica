@@ -11,9 +11,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/authSlice";
 import type { RootState, AppDispatch } from "../../../store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
-export default function LoginScreen({ navigation }: any) {
+export default function LoginScreen() {
   const dispatch = useDispatch<AppDispatch>();
+  const navigation = useNavigation()
   const { loading, error, token } = useSelector(
     (state: RootState) => state.auth
   );
@@ -40,7 +42,7 @@ export default function LoginScreen({ navigation }: any) {
 
   useEffect(() => {
     if (token) {
-      navigation.replace("Home");
+      navigation.navigate("Home");
     }
   }, [token]);
 
@@ -56,7 +58,7 @@ export default function LoginScreen({ navigation }: any) {
       await AsyncStorage.removeItem("rememberUser");
     }
 
-    dispatch(loginUser({ username, password }));
+    dispatch(loginUser({ email:username, password }));
   };
 
   return (
