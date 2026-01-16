@@ -1,19 +1,52 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { loginUser, logout, clearError } from '../store/authSlice';
-import type{ LoginCredentials } from '../types/auth.types';
+import {
+  loginUser,
+  registerUser,
+  logoutUser,
+  restoreSession,
+  clearError,
+} from '../store/authSlice';
+import type{ LoginRequest, RegisterRequest } from '../types/auth.schemas';
+
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
-  const { user, loading, error } = useAppSelector((state) => state.auth);
+
+  const {
+    token,
+    userid,
+    username,
+    expiration,
+    loading,
+    error,
+  } = useAppSelector((state) => state.auth);
+
+  const [registerSuccess, setRegisterSuccess] = useState<boolean|null>(null)
+
+  useEffect(() => {
+    dispatch(restoreSession());
+  }, [dispatch]);
 
   const login = useCallback(
-    (credentials: LoginCredentials) => dispatch(loginUser(credentials)),
+    async (credentials: LoginRequest) => {
+      const result = await dispatch(loginUser(credentials));
+      return result;
+    },
     [dispatch]
   );
 
-  const handleLogout = useCallback(
-    () => dispatch(logout()),
+  const register = useCallback(
+    async (data: RegisterRequest) => {
+      const result = await dispatch(registerUser(data));
+      setRegisterSuccess(result.meta.requestStatus==="fulfilled" || false);
+      return result;
+    },
+    [dispatch]
+  );
+
+  const logout = useCallback(
+    () => dispatch(logoutUser()),
     [dispatch]
   );
 
@@ -22,12 +55,25 @@ export const useAuth = () => {
     [dispatch]
   );
 
+  // const clearRegister = useCallback(
+  //   () => dispatch(clearRegisterState()),
+  //   [dispatch]
+  // );
+
+  const isAuthenticated = !!token;
+
   return {
-    user,
+    token,
+    userid,
+    username,
+    expiration,
     loading,
     error,
+    registerSuccess,
+    isAuthenticated,
     login,
-    logout: handleLogout,
-    clearError: clearAuthError
+    register,
+    logout,
+    clearError: clearAuthError,
   };
 };

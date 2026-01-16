@@ -5,13 +5,13 @@ export interface User {
 }
 
 export interface LoginCredentials {
-  email: string;
+  username: string;
   password: string;
 }
 
-export interface AuthState {
-  token: string |null
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-}
+// export interface AuthState {
+//   token: string |null
+//   user: User | null;
+//   loading: boolean;
+//   error: string | null;
+// }

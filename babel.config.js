@@ -1,3 +1,9 @@
-module.exports = {
-  presets: ['module:@react-native/babel-preset'],
+module.exports = (api)=> {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: [
+      '@babel/plugin-transform-export-namespace-from',
+    ],
+  };
 };

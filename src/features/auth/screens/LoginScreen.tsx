@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, ActivityIndicator } from "react-native";
 import {
   Text,
   TextInput,
@@ -7,23 +7,27 @@ import {
   Checkbox,
   Snackbar,
 } from "react-native-paper";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../store/authSlice";
-import type { RootState, AppDispatch } from "../../../store/store";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import { ScreenContainer } from "react-native-screens";
+import { useAuth } from "../hooks/useAuth";
+import { LoginRequestSchema } from "../types/auth.schemas";
 
 export default function LoginScreen() {
-  const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation()
-  const { loading, error, token } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const { token } = useSelector((state: RootState) => state.auth);
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const [validationError, setValidationError] = useState<string | null>(null);
+
   const [remember, setRemember] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
+
+  const { login, loading, error } = useAuth();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -42,11 +46,12 @@ export default function LoginScreen() {
 
   useEffect(() => {
     if (token) {
-      navigation.navigate("Home");
+      navigation.navigate("Home" as never);
     }
   }, [token]);
 
   const handleLogin = async () => {
+    setValidationError(null);
     if (!username || !password) {
       setVisible(true);
       return;
@@ -54,21 +59,33 @@ export default function LoginScreen() {
 
     if (remember) {
       await AsyncStorage.setItem("rememberUser", username);
+      await AsyncStorage.setItem("rememberPass", password);
     } else {
       await AsyncStorage.removeItem("rememberUser");
+      await AsyncStorage.removeItem("rememberPass");
+
     }
 
-    dispatch(loginUser({ email:username, password }));
+    const result = LoginRequestSchema.safeParse({ username, password });
+
+    if (!result.success) {
+      const firstError = result.error.message;
+      setValidationError(firstError || 'Validation error');
+      return;
+    }
+
+    login({ username, password });
   };
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer
+      style={styles.container}>
       {/* Logo */}
-      <Image
+      {/* <Image
         source={require("../../assets/logo.png")}
         style={styles.logo}
         resizeMode="contain"
-      />
+      /> */}
 
       <Text variant="headlineMedium" style={styles.title}>
         ¡Bienvenido!
@@ -79,7 +96,16 @@ export default function LoginScreen() {
         value={username}
         onChangeText={setUsername}
         mode="outlined"
+        outlineColor="gray"
+        activeOutlineColor="blue"
         style={styles.input}
+        textColor="#000"
+        placeholderTextColor="#000"
+        theme={{
+          colors: {
+            background: '#fff',
+          },
+        }}
       />
 
       <TextInput
@@ -87,17 +113,27 @@ export default function LoginScreen() {
         value={password}
         onChangeText={setPassword}
         mode="outlined"
+        outlineColor="gray"
+        activeOutlineColor="blue"
         secureTextEntry
         right={<TextInput.Icon icon="eye" />}
         style={styles.input}
+        textColor="#000"
+        theme={{
+          colors: {
+            background: '#fff',
+          },
+        }}
       />
 
       <View style={styles.row}>
         <Checkbox
+          color="blue"
+          uncheckedColor="black"
           status={remember ? "checked" : "unchecked"}
           onPress={() => setRemember(!remember)}
         />
-        <Text>Recordarme</Text>
+        <Text style={{ color: "#000" }}>Recordarme</Text>
       </View>
 
       <Button
@@ -105,22 +141,25 @@ export default function LoginScreen() {
         onPress={handleLogin}
         loading={loading}
         style={styles.button}
+        textColor="white"
+        disabled={loading}
       >
-        INICIAR SESIÓN
+        {"INICIAR SESIÓN"}
       </Button>
 
       <Button
         mode="text"
         onPress={() => navigation.navigate("Register")}
         style={styles.link}
+        textColor="blue"
       >
         ¿No tiene una cuenta? Regístrese
       </Button>
 
       <Snackbar visible={visible} onDismiss={() => setVisible(false)}>
-        {error || "Usuario y contraseña son obligatorios"}
+        {error|| validationError || "Usuario y contraseña son obligatorios"}
       </Snackbar>
-    </View>
+    </ScreenContainer>
   );
 }
 
@@ -141,9 +180,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 24,
     fontWeight: "600",
+    color: "#000",
   },
   input: {
     marginBottom: 12,
+    backgroundColor: "#fff",
+    color: "#000",
   },
   row: {
     flexDirection: "row",
@@ -152,9 +194,14 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 8,
-    paddingVertical: 6,
+    backgroundColor: "blue",
+    color: "white"
   },
   link: {
     marginTop: 12,
+    color: "blue"
   },
+  snackBar: {
+    color: "black"
+  }
 });
