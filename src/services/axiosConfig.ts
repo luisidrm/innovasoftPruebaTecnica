@@ -1,16 +1,29 @@
-import axios from "axios";
+import axios, {type AxiosInstance } from 'axios';
 
-const api = axios.create({
-  baseURL: "https://pruebareactjs.test-class.com/Api/",
+const api: AxiosInstance = axios.create({
+  baseURL: process.env.API_URL,
   timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
-export const setAuthToken = (token) => {
-  if (token) {
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
-  } else {
-    api.defaults.headers.common.Authorization = undefined;
-  }
-};
+// Request interceptor
+api.interceptors.request.use(
+  (config) => {
+    // Add auth token, etc.
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-export default api;
+// Response interceptor
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Handle errors globally
+    return Promise.reject(error);
+  }
+);
+
+export { api };
