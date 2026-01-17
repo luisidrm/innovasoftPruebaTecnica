@@ -1,4 +1,6 @@
 import axios, {type AxiosInstance } from 'axios';
+import { store } from '../store/store';
+
 
 const api: AxiosInstance = axios.create({
   baseURL: "https://pruebareactjs.test-class.com/Api/",
@@ -11,7 +13,12 @@ const api: AxiosInstance = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
-    // Add auth token, etc.
+    const token = store.getState().auth.token;// AsyncStorage, SecureStore, Redux, etc
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error) => Promise.reject(error)

@@ -67,7 +67,7 @@ export const registerUser = createAsyncThunk<
 export const logoutUser = createAsyncThunk(
   'auth/logout',
   async () => {
-    await authApi.logout();
+    // await authApi.logout();
     await AsyncStorage.removeItem('token');
     await AsyncStorage.removeItem('user');
   }

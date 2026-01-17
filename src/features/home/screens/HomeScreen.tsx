@@ -1,21 +1,29 @@
-import { ScreenContainer } from "react-native-screens";
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAppSelector } from "../../../store/hooks";
 import { Ionicons, MaterialIcons} from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../auth/hooks/useAuth";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
 
   const userName = useAppSelector(state => state.auth.username);
 
-  const handlePress = (item: string) => {
-    navigation.navigate(item as never)
+  const {logout, loading , error}= useAuth()
+
+  const handlePress = () => {
+    navigation.navigate("Clients" as never)
   };
 
-  return (
-    <ScreenContainer>
+  // if(loading){
+  //   return (
+  //   <SafeAreaView style={styles.wrapper}>
+  //     <ActivityIndicator size="large" color="#0000ff" />
+  //   </SafeAreaView>
+  //   )
+  // }
 
+  return (
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -23,13 +31,13 @@ export default function HomeScreen() {
             <Ionicons name="person-circle-outline" size={32} color="black" />
             <Text style={styles.username}>{userName}</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={logout}>
             <MaterialIcons name="logout" size={24} color="black" />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.card} onPress={()=>handlePress("Clientes")}>
+        <TouchableOpacity style={styles.card} onPress={()=>handlePress()}>
           <View style={styles.iconContainer}>
-            <MaterialIcons name="3g-mobiledata" size={28} color="#2563eb" />
+            <MaterialIcons name="gas-meter" size={28} color="#2563eb" />
           </View>
           <View>
             <Text style={styles.title}>Clientes</Text>
@@ -38,11 +46,13 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
       </View>
-    </ScreenContainer>
   )
 }
 
 const styles = StyleSheet.create({
+  wrapper:{ 
+    flex: 1, 
+  },
   container: {
     flex: 1,
     backgroundColor: '#f3f4f6',
@@ -76,6 +86,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    marginHorizontal: 16,
   },
   iconContainer: {
     width: 50,

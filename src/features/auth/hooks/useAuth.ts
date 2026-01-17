@@ -8,10 +8,12 @@ import {
   clearError,
 } from '../store/authSlice';
 import type{ LoginRequest, RegisterRequest } from '../types/auth.schemas';
+import { useNavigation } from '@react-navigation/native';
 
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
+  const navigation = useNavigation();
 
   const {
     token,
@@ -46,8 +48,12 @@ export const useAuth = () => {
   );
 
   const logout = useCallback(
-    () => dispatch(logoutUser()),
-    [dispatch]
+    () => {
+      dispatch(logoutUser()).then(() =>{
+        navigation.navigate("Login" as never);
+      })
+    },
+    [dispatch, navigation]
   );
 
   const clearAuthError = useCallback(

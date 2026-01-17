@@ -3,10 +3,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../features/auth/screens/LoginScreen";
 import { RegisterScreen } from "../features/auth/screens/RegisterScreen";
 import HomeScreen from "../features/home/screens/HomeScreen";
-// import ClientesListScreen from "../screens/ClientesListScreen";
-// import ClienteFormScreen from "../screens/ClienteFormScreen";
+import ClientsScreen from "../features/home/screens/ClientsScreen";
+import ClientsFormScreen from "../features/home/screens/ClientsFormScreen";
+import type{ RootStackParamList } from "./types";
+import ErrorScreen from "../features/ErrorScreen";
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (
@@ -15,9 +17,9 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        {/* 
-        <Stack.Screen name="Clientes" component={ClientesListScreen} />
-        <Stack.Screen name="ClienteForm" component={ClienteFormScreen} /> */}
+        <Stack.Screen name="Clients" component={ClientsScreen} />
+        <Stack.Screen name="ClientsForm" component={ClientsFormScreen} />
+        <Stack.Screen name="ErrorScreen" component={ErrorScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

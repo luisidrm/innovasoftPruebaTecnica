@@ -17,16 +17,20 @@ export const authApi = {
     const validatedData = LoginResponseSchema.parse(response.data);
     return validatedData;
   },
-register: async (data: RegisterRequest): Promise<RegisterResponse> => {
-  const response = await api.post<RegisterResponse>(
-    '/api/Authenticate/register',
-    data
-  );
+  register: async (data: RegisterRequest): Promise<RegisterResponse> => {
+    const response = await api.post<RegisterResponse>(
+      '/api/Authenticate/register',
+      data
+    );
 
-  const validatedData = RegisterResponseSchema.parse(response.data);
-  return validatedData;
-},
-  logout: async (): Promise<void> => {
-    // Call logout endpoint if it exists
-  }
+    const validatedData = RegisterResponseSchema.parse(response.data);
+    return validatedData;
+  },
+  // logout: async (): Promise<void> => {
+  //   // Call logout endpoint if it exists
+  //   const response = await api.post(
+  //     '/api/Authenticate/logout',
+  //   );
+  //   return response.data;
+  // }
 };
