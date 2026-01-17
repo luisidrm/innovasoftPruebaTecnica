@@ -1,5 +1,6 @@
 import axios, {type AxiosInstance } from 'axios';
 import { store } from '../store/store';
+import { showGlobalError } from '../utils/ErrorBridge';
 
 
 const api: AxiosInstance = axios.create({
@@ -26,9 +27,14 @@ api.interceptors.request.use(
 
 // Response interceptor
 api.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   (error) => {
-    // Handle errors globally
+    const message =
+      error?.response?.data?.message ||
+      error?.message ||
+      "Error inesperado del servidor";
+
+    showGlobalError(message);
     return Promise.reject(error);
   }
 );

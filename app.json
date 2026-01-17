@@ -1,4 +1,9 @@
 {
-  "slug": "json",
-  "name": "PruebaClientes"
+  "expo": {
+    "name": "PruebaClientes",
+    "slug": "json",
+    "android": {
+      "package": "com.empresa.pruebaclientes"
+    }
+  }
 }
