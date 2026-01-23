@@ -1,5 +1,4 @@
 import axios, {type AxiosInstance } from 'axios';
-import { store } from '../store/store';
 import { showGlobalError } from '../utils/ErrorBridge';
 
 
@@ -14,6 +13,7 @@ const api: AxiosInstance = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
+    const {store} = require('../store/store');
     const token = store.getState().auth.token;// AsyncStorage, SecureStore, Redux, etc
 
     if (token) {

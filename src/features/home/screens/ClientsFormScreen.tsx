@@ -13,6 +13,8 @@ import {
   Modal,
   Alert,
   Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { type Client, GENDER_OPTIONS,type Interest, type Gender } from "../../../shared/z.types";
@@ -136,7 +138,17 @@ export default function ClientFormScreen() {
     setForm((prev) => ({ ...prev, [key]: value }));
 
   return (
-    <ScrollView style={styles.container}>
+  <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    keyboardVerticalOffset={80} // tweak if needed (header height)
+  >
+    <ScrollView
+      style={styles.container}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate("Clients" as never)}>
           <Ionicons name="arrow-back" size={24} />
@@ -229,8 +241,9 @@ export default function ClientFormScreen() {
           </View>
         </Pressable>
       </Modal>
-    </ScrollView>
-  );
+        </ScrollView>
+  </KeyboardAvoidingView>
+);
 }
 
 /* ---------------- UI Pieces ---------------- */
