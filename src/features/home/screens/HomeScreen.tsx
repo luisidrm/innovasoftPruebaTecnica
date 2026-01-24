@@ -15,14 +15,6 @@ export default function HomeScreen() {
     navigation.navigate("Clients" as never)
   };
 
-  // if(loading){
-  //   return (
-  //   <SafeAreaView style={styles.wrapper}>
-  //     <ActivityIndicator size="large" color="#0000ff" />
-  //   </SafeAreaView>
-  //   )
-  // }
-
   return (
       <View style={styles.container}>
         {/* Header */}
