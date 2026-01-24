@@ -16,6 +16,7 @@ import SegmentSelector from "../components/SegmentSelector";
 import { useClients } from "../hooks/useClients";
 import { useEffect, useState } from "react";
 import ClientItem from "../components/ClientItem";
+import { useError } from "../../../shared/ErrorContext";
 
 interface Client {
   id: string;
@@ -27,6 +28,7 @@ interface Client {
 export default function ClientsScreen() {
   const { logout, userid } = useAuth();
   const navigation = useNavigation();
+  const { message, clearError } = useError();
 
   const { loading, error, listClients } = useClients();
 
@@ -34,25 +36,37 @@ export default function ClientsScreen() {
   const [mode, setMode] = useState<"Nombre" | "Identificación">("Nombre");
   const [clients, setClients] = useState<Client[]>([]);
 
+  const fetchClients = async () => {
+    try {
+      const params =
+        mode === "Nombre"
+          ? { usuarioId: userid, nombre: search }
+          : { usuarioId: userid, identificacion: search };
+
+      const data = await listClients(params);
+      setClients(data);
+    } catch (err) {
+      console.error("Error fetching clients:", err);
+      setClients([]);
+    }
+  };
 
   useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const params =
-          mode === "Nombre"
-            ? { usuarioId: userid, nombre: search }
-            : { usuarioId: userid, identificacion: search };
-
-        const data = await listClients(params);
-        setClients(data);
-      } catch (err) {
-        console.error("Error fetching clients:", err);
-        setClients([]);
-      }
-    };
-
     fetchClients();
   }, [search, mode]);
+
+  // Si hay error global, mostrar ErrorScreen
+  useEffect(() => {
+    if (message) {
+      navigation.navigate("ErrorScreen", {
+        message,
+        onRetry: () => {
+          clearError();
+          fetchClients();
+        },
+      } as never);
+    }
+  }, [message, clearError, navigation]);
 
   return (
     <View style={styles.container}>
